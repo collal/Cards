@@ -5,8 +5,8 @@
         % Ad esempio: (k, n) = (2, 4) con soluzione [4, 1, 3, 1, 2, 4, 3, 2] ha x_(4, 1) = 1, x_(1,1) = 2, x_(4, 2) = 6.
 % Domini: tutti sono {1, 2, ..., n x k}
 % Vincoli: 
-        % 1. ∀ (i1, j1), (i2, j2) ∈ [1, n] x [1, k], definiamo un vincolo con Scope: {x_(i1, j1), x_(i2, j2)}
-        %                                                                     Relazione: , x_(i1, j1) != x_(i2, j2).
+        % 1. ∀ (i1, j1), (i2, j2) ∈ [1, n] x [1, k] t.c. (i1, j1) != (i2, j2), definiamo un vincolo con Scope: {x_(i1, j1), x_(i2, j2)}
+        %                                                                                               Relazione: x_(i1, j1) != x_(i2, j2).
               % i.e. alldifferent({x_(i,j) | i ∈ [1, n], j ∈ [1, k]})
         % 2. ∀ i ∈ [1, n], j ∈ [1, k-1], definiamo un vincolo con Scope: {x_(i, j), x_(i, j+1)},
         %                                                         Relazione: x_(i, j+1) = x_(i, j) + (i+1).
@@ -24,14 +24,14 @@
 int: n;
 int: k;
 array [1..n, 1..k] of var 1..(n*k) : positions;
-array [1..(n*k)] of var 1..n : fila; % fila di carta alla fine
+array [1..(n*k)] of var 1..n : fila; % fila di carte alla fine
 
 include "globals.mzn";
 constraint all_different(positions);
 constraint forall (i in 1..n, j in 1..(k-1)) (positions[i, j+1] = positions[i, j] + i + 1);
 
 % trasforma l'array in una fila
-constraint forall (i in 1..n, j in 1..k, m in 1..(n*k)) (if positions[i, j] = m then fila[m] = i endif);
+constraint forall (i in 1..n, j in 1..k) (fila[positions[i, j]] = i);
 
 solve satisfy;
 
